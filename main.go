@@ -439,19 +439,19 @@ func _searchTest() {
 	slResponseCode := make([]string, 0)
 	totalCount := (int)(jsonResponse.Find("hits.total.value").(float64))
 	for i := 0; i < totalCount; i++ {
-		fmt.Printf("#DBG\t # COUNT %v #\n", i)
-		fmt.Printf("#DBG\t timeStamp: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", i)))
-		fmt.Printf("#DBG\t channel_type_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.channel_type_code", i)))
-		fmt.Printf("#DBG\t source_service_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.source_service_code", i)))
-		fmt.Printf("#DBG\t sa_guid: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.sa_guid", i)))
-		fmt.Printf("#DBG\t ticket_id: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.ticket_id", i)))
+		fmt.Printf("> DBG\t # COUNT %v #\n", i)
+		fmt.Printf("> DBG\t timeStamp: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", i)))
+		fmt.Printf("> DBG\t channel_type_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.channel_type_code", i)))
+		fmt.Printf("> DBG\t source_service_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.source_service_code", i)))
+		fmt.Printf("> DBG\t sa_guid: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.sa_guid", i)))
+		fmt.Printf("> DBG\t ticket_id: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.ticket_id", i)))
 
-		fmt.Printf("#DBG\t resource: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.resource", i)))
-		fmt.Printf("#DBG\t event_type: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.event_type", i)))
-		fmt.Printf("#DBG\t response_status: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.response_status", i)))
+		fmt.Printf("> DBG\t resource: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.resource", i)))
+		fmt.Printf("> DBG\t event_type: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.event_type", i)))
+		fmt.Printf("> DBG\t response_status: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.response_status", i)))
 
-		fmt.Printf("#DBG\t error_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i)))
-		fmt.Printf("#DBG\t error_message: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_message", i)))
+		fmt.Printf("> DBG\t error_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i)))
+		fmt.Printf("> DBG\t error_message: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_message", i)))
 		fmt.Printf("\n")
 
 		ifaceErrorCode := jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i))
@@ -464,12 +464,12 @@ func _searchTest() {
 
 	var bResult bool = false
 	for i, v := range slResponseCode {
-		fmt.Printf("#DBG\tindex:%v value:%v\n", i, v)
+		fmt.Printf("> DBG\tindex:%v value:%v\n", i, v)
 		if v == "" {
 			bResult = true
 		}
 	}
-	fmt.Printf("#DBG\tIs Reopened:%v\n\n", bResult)
+	fmt.Printf("> DBG\tIs Reopened:%v\n\n", bResult)
 }
 
 func main() {
@@ -494,10 +494,10 @@ func main() {
 		service = csvObject.GetField(row, 36)
 		ticketid = csvObject.GetField(row, 38)
 
-		fmt.Printf("#DBG\tGUID: %v, SERVICE: %v, ticketid: %v\n", guid, service, ticketid)
+		fmt.Printf("> DBG\tGUID: %v, SERVICE: %v, ticketid: %v\n", guid, service, ticketid)
 
 		strQuery := getQuery(guid, service)
-		//fmt.Printf("#DBG\tQueryString: %v\n", strQuery)
+		//fmt.Printf("> DBG\tQueryString: %v\n", strQuery)
 
 		conn := HttpsUtil.NewReqInfo()
 		conn.SetURL("http://10.15.34.123:9210/gklog-api-2023.01.*/_search/?pretty")
@@ -518,25 +518,31 @@ func main() {
 			continue
 		}
 
+		slResponseCode := make([]string, 0)
 		totalCount := (int)(jsonResponse.Find("hits.total.value").(float64))
 		for i := 0; i < totalCount; i++ {
-			fmt.Printf("#DBG\t # COUNT %v #\n", i)
-			fmt.Printf("#DBG\t timeStamp: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", i)))
-			fmt.Printf("#DBG\t channel_type_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.channel_type_code", i)))
-			fmt.Printf("#DBG\t source_service_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.source_service_code", i)))
-			fmt.Printf("#DBG\t sa_guid: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.sa_guid", i)))
-			fmt.Printf("#DBG\t ticket_id: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.ticket_id", i)))
+			fmt.Printf("> DBG\t # COUNT %v #\n", i)
+			fmt.Printf("> DBG\t timeStamp: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", i)))
+			fmt.Printf("> DBG\t channel_type_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.channel_type_code", i)))
+			fmt.Printf("> DBG\t source_service_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.source_service_code", i)))
+			fmt.Printf("> DBG\t sa_guid: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.sa_guid", i)))
+			fmt.Printf("> DBG\t ticket_id: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.ticket_id", i)))
 
-			//fmt.Printf("#DBG\t resource: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.resource", i)))
-			fmt.Printf("#DBG\t event_type: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.event_type", i)))
-			fmt.Printf("#DBG\t response_status: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.response_status", i)))
+			//fmt.Printf("> DBG\t resource: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.resource", i)))
+			fmt.Printf("> DBG\t event_type: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.event_type", i)))
+			fmt.Printf("> DBG\t response_status: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.response_status", i)))
 
-			fmt.Printf("#DBG\t error_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i)))
-			fmt.Printf("#DBG\t error_message: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_message", i)))
+			fmt.Printf("> DBG\t error_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i)))
+			fmt.Printf("> DBG\t error_message: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_message", i)))
 			fmt.Printf("\n")
-		}
 
-		slResponseCode := make([]string, 0)
+			ifaceErrorCode := jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i))
+			if ifaceErrorCode == nil {
+				slResponseCode = append(slResponseCode, "")
+			} else {
+				slResponseCode = append(slResponseCode, ifaceErrorCode.(string))
+			}
+		}
 
 		// PR5004 : 0, nil: 1, !PR5004: X
 		// order by timestamp descending
@@ -555,7 +561,7 @@ func main() {
 				break
 			}
 		}
-		fmt.Printf("#DBG\tIs Reopened:%v\n\n", bResult)
+		fmt.Printf("> DBG\tIs Reopened:%v\n\n", bResult)
 	}
 
 }
