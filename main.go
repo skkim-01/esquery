@@ -11,7 +11,7 @@ import (
 
 var g_query string = `
 {
-	"sort" : [{ "@timestamp" : "desc" },
+	"sort" : [{ "@timestamp" : "desc" }],
 	"query":{"bool":{
 		"must":[
 			{"match":{"source_service_code":"%v"}},
