@@ -17,7 +17,7 @@ var g_query string = `
 `
 
 func getQuery(guid, code string) string {
-	return fmt.Sprintf(g_query, guid, code)
+	return fmt.Sprintf(g_query, code, guid)
 }
 
 // 1. open csv
