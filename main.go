@@ -55,8 +55,9 @@ func main() {
 		strQuery := getQuery(guid, service)
 		fmt.Printf("#DBG\tQueryString: %v\n", strQuery)
 
+		break
 		conn := HttpsUtil.NewReqInfo()
-		conn.SetURL("http://10.15.34.123:9210/gklog-api-*/_search/?pretty")
+		conn.SetURL("http://10.15.34.123:9210/gklog-api-2023.01.*/_search/?pretty")
 		conn.SetMethod("POST")
 		conn.AppendHeader("Authorization", "Basic Z2thZG1pbjpycGRseG1hcHAwMQ==")
 		conn.AppendHeader("Content-Type", "application/json")
@@ -76,15 +77,31 @@ func main() {
 
 		fmt.Println("#DBG\t", jsonResponse.PPrint())
 
-		hitCount := len(jsonResponse.Find("hits.hits").([]interface{}))
-		for i := 0; i < hitCount; i++ {
-			req := fmt.Sprintf("hits.hits.%v.api.request", i)
-			res := fmt.Sprintf("hits.hits.%v.api.response", i)
-			reqmsg := jsonResponse.Find(req)
-			resmsg := jsonResponse.Find(res)
-			fmt.Printf("#DBG\tREQ: %v\n", reqmsg)
-			fmt.Printf("#DBG\tREQ: %v\n", resmsg)
+		totalCount := jsonResponse.Find("hits.total.value").(int)
+		for i := 0; i < totalCount; i++ {
+			fmt.Printf("#DBG\t timeStamp: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.timestamp", i)))
+			fmt.Printf("#DBG\t channel_type_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.channel_type_code", i)))
+			fmt.Printf("#DBG\t source_service_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.source_service_code", i)))
+			fmt.Printf("#DBG\t sa_guid: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.sa_guid", i)))
+			fmt.Printf("#DBG\t ticket_id: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.ticket_id", i)))
+
+			fmt.Printf("#DBG\t resource: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.resource", i)))
+			fmt.Printf("#DBG\t event_type: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.event_type", i)))
+			fmt.Printf("#DBG\t response_status: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.response_status", i)))
+
+			fmt.Printf("#DBG\t error_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.error_code", i)))
+			fmt.Printf("#DBG\t error_message: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.error_message", i)))
 		}
+
+		// hitCount := len(jsonResponse.Find("hits.hits").([]interface{}))
+		// for i := 0; i < hitCount; i++ {
+		// 	req := fmt.Sprintf("hits.hits.%v.api.request", i)
+		// 	res := fmt.Sprintf("hits.hits.%v.api.response", i)
+		// 	reqmsg := jsonResponse.Find(req)
+		// 	resmsg := jsonResponse.Find(res)
+		// 	fmt.Printf("#DBG\tREQ: %v\n", reqmsg)
+		// 	fmt.Printf("#DBG\tREQ: %v\n", resmsg)
+		// }
 	}
 
 	// conn := HttpsUtil.NewReqInfo()
