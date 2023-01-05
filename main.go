@@ -11,10 +11,14 @@ import (
 var g_query string = `
 {"query":{"bool":{
 	"must":[
-		{"match":{"source_service_code":"GKSCD10002"}},
-		{"match":{"sa_guid":"sh0mcbk51j"}}]
+		{"match":{"source_service_code":"%v"}},
+		{"match":{"sa_guid":"%v"}}]
 }}}
 `
+
+func getQuery(guid, code string) string {
+	return fmt.Sprintf(g_query, guid, code)
+}
 
 // 1. open csv
 // 2. get guid/svc
@@ -47,31 +51,59 @@ func main() {
 		ticketid = csvObject.GetField(row, 38)
 
 		fmt.Printf("#DBG\tGUID: %v, SERVICE: %v, ticketid: %v\n", guid, service, ticketid)
+
+		strQuery := getQuery(guid, service)
+		fmt.Printf("#DBG\tQueryString: %v\n", strQuery)
+
+		conn := HttpsUtil.NewReqInfo()
+		conn.SetURL("http://10.15.34.123:9210/gklog-api-2023.01.04/_search/?pretty")
+		conn.SetMethod("POST")
+		conn.AppendHeader("Authorization", "Basic Z2thZG1pbjpycGRseG1hcHAwMQ==")
+		conn.AppendHeader("Content-Type", "application/json")
+		conn.SetBody([]byte(strQuery))
+
+		response, err := HttpsUtil.SendRequest(conn)
+		if nil != err {
+			fmt.Println(err)
+			continue
+		}
+
+		jsonResponse, err := HttpsUtil.ResponseBodyParser(response)
+		if nil != err {
+			fmt.Println(err)
+			continue
+		}
+
+		fmt.Println("#DBG\t", jsonResponse.PPrint())
 	}
 
-	conn := HttpsUtil.NewReqInfo()
-	conn.SetURL("http://10.15.34.123:9210/gklog-api-2023.01.04/_search/?pretty")
-	conn.SetMethod("POST")
-	conn.AppendHeader("Authorization", "Basic Z2thZG1pbjpycGRseG1hcHAwMQ==")
-	conn.AppendHeader("Content-Type", "application/json")
-	conn.SetBody([]byte(g_query))
-	response, err := HttpsUtil.SendRequest(conn)
+	// conn := HttpsUtil.NewReqInfo()
+	// conn.SetURL("http://10.15.34.123:9210/gklog-api-2023.01.04/_search/?pretty")
+	// conn.SetMethod("POST")
+	// conn.AppendHeader("Authorization", "Basic Z2thZG1pbjpycGRseG1hcHAwMQ==")
+	// conn.AppendHeader("Content-Type", "application/json")
+	// conn.SetBody([]byte(g_query))
+	// response, err := HttpsUtil.SendRequest(conn)
+	// if nil != err {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 
-	jsonResponse, err := HttpsUtil.ResponseBodyParser(response)
-	if nil != err {
-		fmt.Println(err)
-		return
-	}
+	// jsonResponse, err := HttpsUtil.ResponseBodyParser(response)
+	// if nil != err {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 
-	hitCount := len(jsonResponse.Find("hits.hits").([]interface{}))
-	for i := 0; i < hitCount; i++ {
-		req := fmt.Sprintf("hits.hits.%v.api.request", i)
-		res := fmt.Sprintf("hits.hits.%v.api.response", i)
-		reqmsg := jsonResponse.Find(req)
-		resmsg := jsonResponse.Find(res)
-		fmt.Printf("#DBG\tREQ: %v\n", reqmsg)
-		fmt.Printf("#DBG\tREQ: %v\n", resmsg)
-	}
+	// hitCount := len(jsonResponse.Find("hits.hits").([]interface{}))
+	// for i := 0; i < hitCount; i++ {
+	// 	req := fmt.Sprintf("hits.hits.%v.api.request", i)
+	// 	res := fmt.Sprintf("hits.hits.%v.api.response", i)
+	// 	reqmsg := jsonResponse.Find(req)
+	// 	resmsg := jsonResponse.Find(res)
+	// 	fmt.Printf("#DBG\tREQ: %v\n", reqmsg)
+	// 	fmt.Printf("#DBG\tREQ: %v\n", resmsg)
+	// }
 }
 
 //error_message
