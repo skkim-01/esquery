@@ -77,7 +77,7 @@ func main() {
 
 		fmt.Println("#DBG\t", jsonResponse.PPrint())
 
-		totalCount := jsonResponse.Find("hits.total.value").(int)
+		totalCount := (int)(jsonResponse.Find("hits.total.value").(float64))
 		for i := 0; i < totalCount; i++ {
 			fmt.Printf("#DBG\t timeStamp: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.timestamp", i)))
 			fmt.Printf("#DBG\t channel_type_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v.channel_type_code", i)))
