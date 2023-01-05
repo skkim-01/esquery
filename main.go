@@ -56,7 +56,7 @@ func main() {
 		fmt.Printf("#DBG\tQueryString: %v\n", strQuery)
 
 		conn := HttpsUtil.NewReqInfo()
-		conn.SetURL("http://10.15.34.123:9210/gklog-api-2023.01.04/_search/?pretty")
+		conn.SetURL("http://10.15.34.123:9210/gklog-api-*/_search/?pretty")
 		conn.SetMethod("POST")
 		conn.AppendHeader("Authorization", "Basic Z2thZG1pbjpycGRseG1hcHAwMQ==")
 		conn.AppendHeader("Content-Type", "application/json")
@@ -75,6 +75,16 @@ func main() {
 		}
 
 		fmt.Println("#DBG\t", jsonResponse.PPrint())
+
+		hitCount := len(jsonResponse.Find("hits.hits").([]interface{}))
+		for i := 0; i < hitCount; i++ {
+			req := fmt.Sprintf("hits.hits.%v.api.request", i)
+			res := fmt.Sprintf("hits.hits.%v.api.response", i)
+			reqmsg := jsonResponse.Find(req)
+			resmsg := jsonResponse.Find(res)
+			fmt.Printf("#DBG\tREQ: %v\n", reqmsg)
+			fmt.Printf("#DBG\tREQ: %v\n", resmsg)
+		}
 	}
 
 	// conn := HttpsUtil.NewReqInfo()
