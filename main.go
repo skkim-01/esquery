@@ -537,11 +537,22 @@ func main() {
 		}
 
 		slResponseCode := make([]string, 0)
-		var bResult bool = false
-		for i, v := range slResponseCode {
-			fmt.Printf("#DBG\tindex:%v value:%v\n", i, v)
+
+		// PR5004 : 0, nil: 1, !PR5004: X
+		// order by timestamp descending
+		// newer - older
+		// x - x - x : true
+		// x - 1 - 0 : true
+		// x - 0 - 1 : false
+		// after not x, don't care
+		var bResult bool = true
+		for _, v := range slResponseCode {
 			if v == "" {
 				bResult = true
+				break
+			} else if v == "PR5004" {
+				bResult = false
+				break
 			}
 		}
 		fmt.Printf("#DBG\tIs Reopened:%v\n\n", bResult)
