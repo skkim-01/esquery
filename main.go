@@ -20,10 +20,11 @@ func getQuery(guid, code string) string {
 	return fmt.Sprintf(g_query, code, guid)
 }
 
-// 1. open csv
-// 2. get guid/svc
-// 3. es query
-// 4. check
+// 1. open csv : o
+// 2. get guid/svc : o
+// 3. es query : o
+// 4. check : o
+
 // 5. update result
 // 6. make csv
 
@@ -55,7 +56,6 @@ func main() {
 		strQuery := getQuery(guid, service)
 		fmt.Printf("#DBG\tQueryString: %v\n", strQuery)
 
-		break
 		conn := HttpsUtil.NewReqInfo()
 		conn.SetURL("http://10.15.34.123:9210/gklog-api-2023.01.*/_search/?pretty")
 		conn.SetMethod("POST")
