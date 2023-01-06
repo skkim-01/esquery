@@ -34,8 +34,6 @@ func main() {
 	checklist := make([]string, 0)
 	utils.Sfolder(&checklist, "./resources")
 
-	fmt.Println(checklist)
-
 	csvObject := csvs.NewCSVHandle()
 	err := csvObject.OpenCSV(checklist[0])
 	if nil != err {
@@ -93,7 +91,7 @@ func main() {
 
 			ifaceErrorCode := jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i))
 			if ifaceErrorCode == nil {
-				slResponseCode = append(slResponseCode, "")
+				slResponseCode = append(slResponseCode, "SUCCESS")
 			} else {
 				slResponseCode = append(slResponseCode, ifaceErrorCode.(string))
 			}
@@ -109,7 +107,7 @@ func main() {
 		var bResult bool = true
 		var nSuccessIdx int = -1
 		for i, v := range slResponseCode {
-			if v == "" {
+			if v == "SUCCESS" {
 				nSuccessIdx = i
 				bResult = true
 				break
@@ -119,9 +117,10 @@ func main() {
 			}
 		}
 		fmt.Println("> DBG\t Response Code Order:", slResponseCode)
-		fmt.Printf("> DBG\tIs Reopened:%v\n\n", bResult)
+		fmt.Printf("> DBG\t Is Reopened:%v\n", bResult)
 		if bResult {
 			fmt.Printf("> DBG\t SuccessTime: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", nSuccessIdx)))
 		}
+		fmt.Println()
 	}
 }
