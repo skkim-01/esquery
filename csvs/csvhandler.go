@@ -31,7 +31,7 @@ func (obj *CSVHandle) OpenCSV(strFile string) error {
 		return err
 	}
 
-	fmt.Printf("#DBG\t%v is opened: %v rows %v columns\n", strFile, len(obj.records), len(obj.records[0]))
+	fmt.Printf("> DBG\t%v is opened: %v rows %v columns\n\n", strFile, len(obj.records), len(obj.records[0]))
 	return nil
 }
 
