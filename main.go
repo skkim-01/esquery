@@ -6,6 +6,7 @@ import (
 	"github.com/skkim-01/esquery/csvs"
 	"github.com/skkim-01/esquery/utils"
 	HttpsUtil "github.com/skkim-01/esquery/utils/httpsutil"
+	slog "github.com/skkim-01/esquery/utils/simplelog"
 )
 
 var g_query string = `
@@ -32,25 +33,36 @@ func getQuery(guid, code string) string {
 
 func main() {
 	checklist := make([]string, 0)
-	utils.Sfolder(&checklist, "./resources")
+	utils.Sfolder(&checklist, "./res")
+
+	fmt.Println(">DBG\tcheck files:", checklist)
+	for _, v := range checklist {
+		fmt.Println(">DBG\tfile:", v)
+		_search(v)
+	}
+}
+
+func _search(strCSVFile string) {
+	var guid string
+	var service string
+	var ticketid string
+	var strLogFile string = "./" + strCSVFile + ".log"
+	fmt.Println(">DBG\tresult is written at", strLogFile)
 
 	csvObject := csvs.NewCSVHandle()
-	err := csvObject.OpenCSV(checklist[0])
+	err := csvObject.OpenCSV(strCSVFile)
 	if nil != err {
 		fmt.Println(err)
 		return
 	}
-
-	var guid string
-	var service string
-	var ticketid string
 
 	for row := 1; row < csvObject.RowCount(); row++ {
 		guid = csvObject.GetField(row, 35)
 		service = csvObject.GetField(row, 36)
 		ticketid = csvObject.GetField(row, 38)
 
-		fmt.Printf("> DBG\tGUID: %v, SERVICE: %v, ticketid: %v\n", guid, service, ticketid)
+		fmt.Printf("GUID: %v, SERVICE: %v, ticketid: %v\n\n", guid, service, ticketid)
+		slog.Write(strLogFile, fmt.Sprintf("\tGUID: %v, SERVICE: %v, ticketid: %v", guid, service, ticketid))
 
 		strQuery := getQuery(guid, service)
 		conn := HttpsUtil.NewReqInfo()
@@ -73,21 +85,21 @@ func main() {
 		}
 
 		slResponseCode := make([]string, 0)
-		totalCount := (int)(jsonResponse.Find("hits.total.value").(float64))
+		totalCount := (int)(jsonResponse.Find("hits.hits").(float64))
 		for i := 0; i < totalCount; i++ {
-			fmt.Printf("> DBG\t # COUNT %v #\n", i)
-			fmt.Printf("> DBG\t timeStamp: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", i)))
-			fmt.Printf("> DBG\t channel_type_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.channel_type_code", i)))
-			fmt.Printf("> DBG\t source_service_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.source_service_code", i)))
-			fmt.Printf("> DBG\t sa_guid: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.sa_guid", i)))
-			fmt.Printf("> DBG\t ticket_id: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.ticket_id", i)))
+			slog.Write(strLogFile, fmt.Sprintf("# COUNT %v #", i))
+			slog.Write(strLogFile, fmt.Sprintf("timeStamp: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", i))))
+			slog.Write(strLogFile, fmt.Sprintf("channel_type_code: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.channel_type_code", i))))
+			slog.Write(strLogFile, fmt.Sprintf("source_service_code: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.source_service_code", i))))
+			slog.Write(strLogFile, fmt.Sprintf("sa_guid: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.sa_guid", i))))
+			slog.Write(strLogFile, fmt.Sprintf("ticket_id: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.ticket_id", i))))
 
-			fmt.Printf("> DBG\t event_type: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.event_type", i)))
-			fmt.Printf("> DBG\t response_status: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.response_status", i)))
+			slog.Write(strLogFile, fmt.Sprintf("event_type: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.event_type", i))))
+			slog.Write(strLogFile, fmt.Sprintf("response_status: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.response_status", i))))
 
-			fmt.Printf("> DBG\t error_code: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i)))
-			fmt.Printf("> DBG\t error_message: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_message", i)))
-			fmt.Printf("\n")
+			slog.Write(strLogFile, fmt.Sprintf("error_code: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i))))
+			slog.Write(strLogFile, fmt.Sprintf("error_message: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_message", i))))
+			slog.Write(strLogFile, "")
 
 			ifaceErrorCode := jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.error_code", i))
 			if ifaceErrorCode == nil {
@@ -116,11 +128,11 @@ func main() {
 				break
 			}
 		}
-		fmt.Println("> DBG\t Response Code Order:", slResponseCode)
-		fmt.Printf("> DBG\t Is Reopened:%v\n", bResult)
+		slog.Write(strLogFile, fmt.Sprintf("Response Code Order:", slResponseCode))
+		slog.Write(strLogFile, fmt.Sprintf("Is Reopened:%v", bResult))
 		if bResult {
-			fmt.Printf("> DBG\t SuccessTime: %v\n", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", nSuccessIdx)))
+			slog.Write(strLogFile, fmt.Sprintf("SuccessTime: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", nSuccessIdx))))
 		}
-		fmt.Println()
+		slog.Write(strLogFile, "")
 	}
 }
