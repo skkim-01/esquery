@@ -46,7 +46,7 @@ func _search(strCSVFile string) {
 	var guid string
 	var service string
 	var ticketid string
-	var strLogFile string = "./" + strCSVFile + ".log"
+	var strLogFile string = "../" + strCSVFile + ".log"
 	fmt.Println(">DBG\tresult is written at", strLogFile)
 
 	csvObject := csvs.NewCSVHandle()
@@ -85,7 +85,8 @@ func _search(strCSVFile string) {
 		}
 
 		slResponseCode := make([]string, 0)
-		totalCount := (int)(jsonResponse.Find("hits.hits").(float64))
+		//totalCount := (int)(jsonResponse.Find("hits.hits").(float64))
+		totalCount := len(jsonResponse.Find("hits.hits").([]interface{}))
 		for i := 0; i < totalCount; i++ {
 			slog.Write(strLogFile, fmt.Sprintf("# COUNT %v #", i))
 			slog.Write(strLogFile, fmt.Sprintf("timeStamp: %v", jsonResponse.Find(fmt.Sprintf("hits.hits.%v._source.timestamp", i))))
