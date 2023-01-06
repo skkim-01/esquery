@@ -46,7 +46,7 @@ func _search(strCSVFile string) {
 	var guid string
 	var service string
 	var ticketid string
-	var strLogFile string = "../" + strCSVFile + ".log"
+	var strLogFile string = strCSVFile + ".log"
 	fmt.Println(">DBG\tresult is written at", strLogFile)
 
 	csvObject := csvs.NewCSVHandle()
